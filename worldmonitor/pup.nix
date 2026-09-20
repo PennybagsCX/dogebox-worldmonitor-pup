@@ -50,7 +50,7 @@ let
   # values there feed the SERVER-side provider chain (compose-env equivalent).
   bootstrap = pkgs.writeText "wm-bootstrap.sh" ''
     CFG=/storage/config
-    APP=/storage/app
+    APP=/storage/wm
     mkdir -p "$CFG"
 
     if [ ! -f "$CFG/secrets.env" ]; then
@@ -147,7 +147,7 @@ let
 
       server {
         listen ''${WM_LISTEN_ADDR};
-        root /storage/app/html;
+        root /storage/wm/html;
         # The Vite build renames the SPA entry index.html -> dashboard.html
         index dashboard.html;
 
@@ -258,7 +258,7 @@ let
     export RELAY_SHARED_SECRET="$RELAY_SHARED_SECRET"
     # Wait for the REST proxy (any HTTP answer means it is up)
     until ${pkgs.curl}/bin/curl -s -o /dev/null http://127.0.0.1:8079; do sleep 1; done
-    cd /storage/app
+    cd /storage/wm/app
     # Heap capped for the NanoPC-T6 (RK3588)
     exec ${pkgs.nodejs}/bin/node --max-old-space-size=384 local-api-server.mjs
   '';
@@ -285,7 +285,7 @@ let
     export SRH_TOKEN="$REDIS_TOKEN"
     export SRH_CONNECTION_STRING="redis://:''${REDIS_PASSWORD}@127.0.0.1:6379"
     export PORT="8079"
-    cd /storage/app/redis-rest
+    cd /storage/wm/redis-rest
     exec ${pkgs.nodejs}/bin/node redis-rest-proxy.mjs
   '';
 
