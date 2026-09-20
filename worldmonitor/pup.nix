@@ -234,7 +234,7 @@ let
     . /storage/config/secrets.env
     export WM_LISTEN_ADDR="''${DBX_PUP_IP:-0.0.0.0}:9100"
     mkdir -p /tmp/nginx-client-body /tmp/nginx-proxy /tmp/nginx-fastcgi /tmp/nginx-uwsgi /tmp/nginx-scgi
-    ${pkgs.gettext}/bin/envsubst 'WM_LISTEN_ADDR LOCAL_API_PORT LOCAL_API_TOKEN' < ${nginxConf} > /tmp/nginx.conf
+    ${pkgs.gettext}/bin/envsubst '$WM_LISTEN_ADDR $LOCAL_API_PORT $LOCAL_API_TOKEN' < ${nginxConf} > /tmp/nginx.conf
     exec ${nginxPkg}/bin/nginx -c /tmp/nginx.conf -g "daemon off;"
   '';
 

@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "meta": {
     "name": "WorldMonitor",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "logoPath": "logo.png",
     "shortDescription": "Real-time global intelligence dashboard",
     "longDescription": "WorldMonitor \u2014 AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational-awareness dashboard (upstream koala73/worldmonitor, AGPL-3.0). Works with zero API keys out of the box: news, markets, earthquakes, weather, natural events, conflict data and more render immediately, with local AI briefs via the browser's own ONNX model. Optional per-user keys (in the app's Settings page) or box-wide operator keys unlock cloud LLMs (Groq, OpenRouter, any OpenAI-compatible endpoint including LAN Ollama) and premium data layers.",
@@ -16,7 +16,7 @@
   "container": {
     "build": {
       "nixFile": "pup.nix",
-      "nixFileSha256": "3cb19751ba2c9ac41a364ce41670b943ff924f25d995cdd3eba4b1f0033aaf56"
+      "nixFileSha256": "f6a363333879b2bdef282d18020ddae50bd1f0e1b218632036693d0ba9b0fa7c"
     },
     "services": [
       {
