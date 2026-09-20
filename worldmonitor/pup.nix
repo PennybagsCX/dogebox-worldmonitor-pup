@@ -22,7 +22,7 @@
 # Never build node_modules on the box.
 
 let
-  releaseTag = "v2.10.0-wm1";
+  releaseTag = "v2.10.0-wm2";
 
   # The dist ships Brotli pre-compressed assets (*.br, >1KB) and no .gz, so
   # serve them with brotli_static (upstream's Alpine image only has gzip_static
@@ -35,7 +35,7 @@ let
     # Prebuilt full-stack bundle — GitHub release asset on the fork.
     # Built from koala73/worldmonitor v2.10.0 by scripts/build-dist.sh.
     url = "https://github.com/PennybagsCX/worldmonitor/releases/download/${releaseTag}/worldmonitor-fullstack-${releaseTag}.tar.gz";
-    sha256 = "c819f8be945b7f1e112a0c9529d00af28ddc6e990516f84483ef3f33ce5ab6c5";
+    sha256 = "19f91c09e9214b259ff23ae11580428fe899d82a3b74cdccf8b309b220bbd373";
   };
 
   # Absolute store paths everywhere — the minimal pup container has no /usr/bin
@@ -316,7 +316,7 @@ let
     echo "[wm-seed] loop started (first pass now, then every 6h)"
     while true; do
       echo "[wm-seed] pass start $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      sh /storage/wm/scripts/run-seeders.sh || echo "[wm-seed] pass had failures (non-fatal)"
+      ${pkgs.stdenv.shell} /storage/wm/scripts/run-seeders.sh || echo "[wm-seed] pass had failures (non-fatal)"
       echo "[wm-seed] pass done; sleeping 6h"
       sleep 21600
     done
