@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "meta": {
     "name": "WorldMonitor",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "logoPath": "logo.png",
     "shortDescription": "Real-time global intelligence dashboard",
     "longDescription": "WorldMonitor \u2014 AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational-awareness dashboard (upstream koala73/worldmonitor, AGPL-3.0). Works with zero API keys out of the box, with local AI briefs via the browser's own ONNX model. NEW in 0.2.0: bring-your-own AI keys \u2014 enter Groq / OpenRouter / any OpenAI-compatible endpoint (LAN Ollama, vLLM) in the app's Settings and AI briefs run directly through YOUR keys from your browser (keys never leave your device); seeder service keeps server-aggregated panels populated; optional live vessel tracking (AIS relay) activates from the operator env file.",
@@ -16,7 +16,7 @@
   "container": {
     "build": {
       "nixFile": "pup.nix",
-      "nixFileSha256": "82422c62a7cf1500aba640d329bd0a5e86a32c0d28e343493c9b1c767d6c42fe"
+      "nixFileSha256": "2c5b7156d640f51e156d6d215a266b6b8fd7c6137d80fdca12c51b84b92caaf2"
     },
     "services": [
       {

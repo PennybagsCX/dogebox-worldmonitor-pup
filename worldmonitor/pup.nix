@@ -22,7 +22,7 @@
 # Never build node_modules on the box.
 
 let
-  releaseTag = "v2.10.0-wm2";
+  releaseTag = "v2.10.0-wm3";
 
   # The dist ships Brotli pre-compressed assets (*.br, >1KB) and no .gz, so
   # serve them with brotli_static (upstream's Alpine image only has gzip_static
@@ -35,7 +35,7 @@ let
     # Prebuilt full-stack bundle — GitHub release asset on the fork.
     # Built from koala73/worldmonitor v2.10.0 by scripts/build-dist.sh.
     url = "https://github.com/PennybagsCX/worldmonitor/releases/download/${releaseTag}/worldmonitor-fullstack-${releaseTag}.tar.gz";
-    sha256 = "19f91c09e9214b259ff23ae11580428fe899d82a3b74cdccf8b309b220bbd373";
+    sha256 = "dee16ef5a69b514d42285ef4eb13cfcbec1fdf548770a7a03a0a523c6a3a5920";
   };
 
   # Absolute store paths everywhere — the minimal pup container has no /usr/bin
