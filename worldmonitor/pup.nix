@@ -22,7 +22,7 @@
 # Never build node_modules on the box.
 
 let
-  releaseTag = "v2.10.0-wm3";
+  releaseTag = "v2.10.0-wm4";
 
   # The dist ships Brotli pre-compressed assets (*.br, >1KB) and no .gz, so
   # serve them with brotli_static (upstream's Alpine image only has gzip_static
@@ -35,7 +35,7 @@ let
     # Prebuilt full-stack bundle — GitHub release asset on the fork.
     # Built from koala73/worldmonitor v2.10.0 by scripts/build-dist.sh.
     url = "https://github.com/PennybagsCX/worldmonitor/releases/download/${releaseTag}/worldmonitor-fullstack-${releaseTag}.tar.gz";
-    sha256 = "dee16ef5a69b514d42285ef4eb13cfcbec1fdf548770a7a03a0a523c6a3a5920";
+    sha256 = "466a82998fb61d61c4c6527062007975bc87bd3f2989f63036040f2d82fbc81c";
   };
 
   # Absolute store paths everywhere — the minimal pup container has no /usr/bin
@@ -316,7 +316,7 @@ let
     echo "[wm-seed] loop started (first pass now, then every 6h)"
     while true; do
       echo "[wm-seed] pass start $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      ${pkgs.stdenv.shell} /storage/wm/scripts/run-seeders.sh || echo "[wm-seed] pass had failures (non-fatal)"
+      ${pkgs.stdenv.shell} /storage/wm/app/scripts/run-seeders.sh || echo "[wm-seed] pass had failures (non-fatal)"
       echo "[wm-seed] pass done; sleeping 6h"
       sleep 21600
     done
@@ -346,7 +346,7 @@ let
     export UPSTASH_REDIS_REST_TOKEN="$REDIS_TOKEN"
     export UPSTASH_ALLOW_INSECURE_HTTP="true"
     export PORT="3004"
-    cd /storage/wm/scripts
+    cd /storage/wm/app/scripts
     exec ${pkgs.nodejs}/bin/node ais-relay.cjs
   '';
 
