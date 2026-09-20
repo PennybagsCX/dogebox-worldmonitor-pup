@@ -58,7 +58,10 @@ AISSTREAM_API_KEY, NASA_FIRMS_API_KEY, AVIATIONSTACK_API, CLOUDFLARE_API_TOKEN
 # service state (host):
 sudo systemctl status <svc> --machine pup-<hash>
 # logs:
-sudo journalctl -u <svc> -M pup-<hash> -f     # svc: web | api | redis | redisrest
+sudo journalctl -u <svc> -M pup-<hash> -f     # svc: api | redis | redisrest
+# nginx logs are FILES (journald sockets break nginx's /dev/stderr reopen):
+sudo less /opt/dogebox/pups/storage/<hash>/config/nginx-error.log
+sudo tail -f /opt/dogebox/pups/storage/<hash>/config/nginx-access.log
 # wipe config (keeps nothing): rm /storage/config/* — regenerated on restart
 ```
 
