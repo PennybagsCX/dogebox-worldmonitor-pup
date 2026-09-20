@@ -113,7 +113,10 @@ let
   # Static paths resolved at build time; runtime secrets via envsubst (web-run).
   nginxConf = pkgs.writeText "worldmonitor-nginx.conf.template" ''
     worker_processes auto;
-    error_log /dev/stderr warn;
+    # File-based logs: nginx reopens error_log via /proc/self/fd, which fails
+    # with ENXIO under systemd-journald sockets (Docker pipes allow it — the
+    # one place upstream's /dev/stderr config can't be copied verbatim).
+    error_log /storage/config/nginx-error.log warn;
     pid /tmp/nginx.pid;
 
     events {
@@ -125,7 +128,7 @@ let
       default_type  application/octet-stream;
 
       log_format main '$remote_addr - [$time_local] "$request" $status $body_bytes_sent';
-      access_log /dev/stdout main;
+      access_log /storage/config/nginx-access.log main;
 
       sendfile on;
       tcp_nopush on;
