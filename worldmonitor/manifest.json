@@ -2,10 +2,10 @@
   "manifestVersion": 1,
   "meta": {
     "name": "WorldMonitor",
-    "version": "0.1.4",
+    "version": "0.2.0",
     "logoPath": "logo.png",
     "shortDescription": "Real-time global intelligence dashboard",
-    "longDescription": "WorldMonitor \u2014 AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational-awareness dashboard (upstream koala73/worldmonitor, AGPL-3.0). Works with zero API keys out of the box: news, markets, earthquakes, weather, natural events, conflict data and more render immediately, with local AI briefs via the browser's own ONNX model. Optional per-user keys (in the app's Settings page) or box-wide operator keys unlock cloud LLMs (Groq, OpenRouter, any OpenAI-compatible endpoint including LAN Ollama) and premium data layers.",
+    "longDescription": "WorldMonitor \u2014 AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational-awareness dashboard (upstream koala73/worldmonitor, AGPL-3.0). Works with zero API keys out of the box, with local AI briefs via the browser's own ONNX model. NEW in 0.2.0: bring-your-own AI keys \u2014 enter Groq / OpenRouter / any OpenAI-compatible endpoint (LAN Ollama, vLLM) in the app's Settings and AI briefs run directly through YOUR keys from your browser (keys never leave your device); seeder service keeps server-aggregated panels populated; optional live vessel tracking (AIS relay) activates from the operator env file.",
     "upstreamVersions": {
       "worldmonitor": "2.10.0"
     }
@@ -16,7 +16,7 @@
   "container": {
     "build": {
       "nixFile": "pup.nix",
-      "nixFileSha256": "a125b306342fd8981fd59ccb957478e49cc65fcb11eeda1a5aa9322da9c79fbd"
+      "nixFileSha256": "fed61927df6d4e0cbcccdd9c04e1879303fddc84e5eb5af053b0dda8c6f5b65f"
     },
     "services": [
       {
@@ -47,6 +47,22 @@
         "name": "redisrest",
         "command": {
           "exec": "/bin/wm-redis-rest",
+          "cwd": "",
+          "env": null
+        }
+      },
+      {
+        "name": "seeder",
+        "command": {
+          "exec": "/bin/wm-seed",
+          "cwd": "",
+          "env": null
+        }
+      },
+      {
+        "name": "relay",
+        "command": {
+          "exec": "/bin/wm-relay",
           "cwd": "",
           "env": null
         }

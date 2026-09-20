@@ -23,8 +23,12 @@ Two paths, pick per need:
 
 | Path | Where | Applies to | Best for |
 |---|---|---|---|
-| **Per-user (recommended)** | App **Settings** page, in your browser | AI providers: Groq / OpenRouter / any OpenAI-compatible endpoint (Ollama, vLLM, llama.cpp) | Personal keys stay in your browser (localStorage), never on the box; each household member uses their own |
-| **Box-wide operator keys** | `worldmonitor.env` on the box | Server-side provider chain + data-source layers (see below) | One config for the whole household; enables key-gated panels for everyone |
+| **Per-user (recommended)** | App **Settings → AI & Summarization**, in your browser | AI providers: **Groq key, OpenRouter key, Ollama server URL + model** (any OpenAI-compatible server: Ollama, vLLM, llama.cpp) | AI briefs run directly through YOUR keys from your browser (client-direct); keys live in your browser's localStorage, never on the box or any server; each household member uses their own |
+| **Box-wide operator keys** | `worldmonitor.env` on the box | Server-side provider chain + data-source layers (incl. AISStream for the live vessel-tracking relay) | One config for the whole household |
+
+**How the per-user AI works (v0.2.0 fork feature)**: upstream collects these keys only for the desktop app; on web it discarded them. The fork adds a browser web-vault — enter your key in Settings, it persists in your browser, and AI briefs try **your Ollama → your Groq → your OpenRouter** ahead of every other path, falling back to the keyless browser-local model. Nothing is sent anywhere except the provider you configured.
+
+**Ollama users**: set *Ollama Server URL* (`http://<lan-host>:11434`) and *Ollama Model* in Settings; on the Ollama host set `OLLAMA_HOST=0.0.0.0` and `OLLAMA_ORIGINS` to include the pup's origin (`http://10.0.0.98:10018`) so browser-direct calls pass CORS.
 
 **Box-wide operator keys**: SSH in, edit `/opt/dogebox/pups/storage/<pup-hash>/config/worldmonitor.env` (a commented template is created on first boot), then restart the pup (disable → enable on the pup card). Available keys:
 
@@ -38,14 +42,18 @@ AISSTREAM_API_KEY, NASA_FIRMS_API_KEY, AVIATIONSTACK_API, CLOUDFLARE_API_TOKEN
 
 **Key-gated layers** (operator path) appear in the dashboard once the corresponding key is set; without keys those layers are hidden — that is by design, not a fault.
 
-## Architecture (one container, 4 services)
+## Architecture (one container, 6 services)
 
 | Service | What | Binds |
 |---|---|---|
 | web | nginx — static SPA + SPA fallback + `/api/` proxy | `$DBX_PUP_IP:9100` (the single webUI expose) |
-| api | Node `local-api-server.mjs` (upstream sidecar, 50+ routes) | 127.0.0.1:46123 |
+| api | Node `local-api-server.mjs` (upstream sidecar, 148 routes) | 127.0.0.1:46123 |
 | redis | redis-server (requirepass, 256MB LRU cap) | 127.0.0.1:6379 |
 | redisrest | upstream redis-rest proxy (Upstash REST protocol) | 127.0.0.1:8079 |
+| seeder | 6h loop of upstream's seeders — populates the Redis-cached layers (risk scores, forecasts, energy, …) that upstream fills from a host cron | — |
+| relay | AIS vessel-tracking websocket — **idles** (pure shell sleep) until `AISSTREAM_API_KEY` is set in the operator env | 127.0.0.1:3004 |
+
+The seeder needs a few passes (~15–30 min first boot) for the server-aggregated panels to fill; keyless client-side panels are live immediately.
 
 - Same-origin model: the browser only ever talks to the web expose; dogeboxd assigns the host proxy port at install — nothing is baked into the build.
 - First boot generates `secrets.env` (RELAY_SHARED_SECRET, REDIS_PASSWORD, REDIS_TOKEN, LOCAL_API_TOKEN) into `/storage/config/` (chmod 600, race-safe across the 4 services). Deleting `secrets.env` regenerates on next start.

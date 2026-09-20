@@ -295,7 +295,62 @@ let
     exec ${pkgs.nodejs}/bin/node redis-rest-proxy.mjs
   '';
 
+  # ── Seeder loop (self-hosted fork): populates the Redis-cached layers that
+  # upstream fills from a host-side cron. First pass as soon as the REST proxy
+  # is up, then every 6h. Data-source keys come from the operator env file.
+  seeder = pkgs.writeScriptBin "wm-seed" ''
+    #!${pkgs.stdenv.shell}
+    export PATH=${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.nodejs}/bin:$PATH
+    . ${bootstrap}
+    . /storage/config/secrets.env
+    if [ -f /storage/config/worldmonitor.env ]; then
+      set -a
+      . /storage/config/worldmonitor.env
+      set +a
+    fi
+    export UPSTASH_REDIS_REST_URL="http://127.0.0.1:8079"
+    export UPSTASH_REDIS_REST_TOKEN="$REDIS_TOKEN"
+    export SEED_TIMEOUT="600"
+    echo "[wm-seed] waiting for redis-rest..."
+    until ${pkgs.curl}/bin/curl -s -o /dev/null http://127.0.0.1:8079; do sleep 2; done
+    echo "[wm-seed] loop started (first pass now, then every 6h)"
+    while true; do
+      echo "[wm-seed] pass start $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      sh /storage/wm/scripts/run-seeders.sh || echo "[wm-seed] pass had failures (non-fatal)"
+      echo "[wm-seed] pass done; sleeping 6h"
+      sleep 21600
+    done
+  '';
+
+  # ── AIS relay (self-hosted fork): live vessel tracking websocket. Gated:
+  # without AISSTREAM_API_KEY (operator env file) it idles as a pure shell
+  # sleep — zero node processes, ~0 cost. Add the key, then disable→enable
+  # the pup to activate it.
+  relay = pkgs.writeScriptBin "wm-relay" ''
+    #!${pkgs.stdenv.shell}
+    export PATH=${pkgs.coreutils}/bin:$PATH
+    . ${bootstrap}
+    . /storage/config/secrets.env
+    if [ -f /storage/config/worldmonitor.env ]; then
+      set -a
+      . /storage/config/worldmonitor.env
+      set +a
+    fi
+    if [ -z "''${AISSTREAM_API_KEY:-}" ]; then
+      echo "[wm-relay] AISSTREAM_API_KEY not set — idling (live vessel tracking off)."
+      echo "[wm-relay] to enable: set AISSTREAM_API_KEY in /storage/config/worldmonitor.env, then disable→enable the pup."
+      while true; do sleep 3600; done
+    fi
+    export RELAY_SHARED_SECRET="$RELAY_SHARED_SECRET"
+    export UPSTASH_REDIS_REST_URL="http://127.0.0.1:8079"
+    export UPSTASH_REDIS_REST_TOKEN="$REDIS_TOKEN"
+    export UPSTASH_ALLOW_INSECURE_HTTP="true"
+    export PORT="3004"
+    cd /storage/wm/scripts
+    exec ${pkgs.nodejs}/bin/node ais-relay.cjs
+  '';
+
 in
 {
-  inherit web api redis redisrest;
+  inherit web api redis redisrest seeder relay;
 }
