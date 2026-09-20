@@ -1,0 +1,6 @@
+{
+  "id": "pennybags.pups.worldmonitor",
+  "name": "Pennybags — WorldMonitor",
+  "description": "WorldMonitor pup — real-time global intelligence dashboard (news, geopolitics, markets, infrastructure; AGPL-3.0, works keyless, BYO AI keys)",
+  "pups": [{"location": "worldmonitor"}]
+}

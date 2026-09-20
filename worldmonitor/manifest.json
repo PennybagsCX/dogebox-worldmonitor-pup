@@ -1,0 +1,70 @@
+{
+  "manifestVersion": 1,
+  "meta": {
+    "name": "WorldMonitor",
+    "version": "0.1.0",
+    "logoPath": "logo.png",
+    "shortDescription": "Real-time global intelligence dashboard",
+    "longDescription": "WorldMonitor \u2014 AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational-awareness dashboard (upstream koala73/worldmonitor, AGPL-3.0). Works with zero API keys out of the box: news, markets, earthquakes, weather, natural events, conflict data and more render immediately, with local AI briefs via the browser's own ONNX model. Optional per-user keys (in the app's Settings page) or box-wide operator keys unlock cloud LLMs (Groq, OpenRouter, any OpenAI-compatible endpoint including LAN Ollama) and premium data layers.",
+    "upstreamVersions": {
+      "worldmonitor": "2.10.0"
+    }
+  },
+  "config": {
+    "sections": null
+  },
+  "container": {
+    "build": {
+      "nixFile": "pup.nix",
+      "nixFileSha256": "e256629e8bc1466b6ec80e9d7627a739844f209dee967fa9e1070d30ba746bce"
+    },
+    "services": [
+      {
+        "name": "web",
+        "command": {
+          "exec": "/bin/wm-web",
+          "cwd": "",
+          "env": null
+        }
+      },
+      {
+        "name": "api",
+        "command": {
+          "exec": "/bin/wm-api",
+          "cwd": "",
+          "env": null
+        }
+      },
+      {
+        "name": "redis",
+        "command": {
+          "exec": "/bin/wm-redis",
+          "cwd": "",
+          "env": null
+        }
+      },
+      {
+        "name": "redisrest",
+        "command": {
+          "exec": "/bin/wm-redis-rest",
+          "cwd": "",
+          "env": null
+        }
+      }
+    ],
+    "exposes": [
+      {
+        "name": "web",
+        "type": "http",
+        "port": 9100,
+        "interfaces": null,
+        "listenOnHost": true,
+        "webUI": true
+      }
+    ],
+    "requiresInternet": true
+  },
+  "interfaces": null,
+  "dependencies": null,
+  "metrics": null
+}
